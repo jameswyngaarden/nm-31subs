@@ -14,6 +14,7 @@ make_mask = 0; %change to 1 if want to write out these masks. note would overwri
 positive_relationship = 1; %makes masks of the data selectively with + or - relationships; if set to 0, would make mask including voxels with - relationships
 output_file05 = [root_folder 'genXage_pos_05.nii'];%mask containing voxels with relationships where p<0.05
 output_file01 = [root_folder 'genXage_pos_01.nii'];%mask containing voxels with relationships where p<0.01
+
 %load scan_key.mat
 %for s=1:length(filepaths2_ch(:,1))
 %    for var=1:length(filepaths2_ch(1,:))
@@ -28,7 +29,7 @@ output_file01 = [root_folder 'genXage_pos_01.nii'];%mask containing voxels with 
 %end
 
 %load college.mat
-load scan_key.mat
+load scan_key_26.mat
 root_folder = ['/data/projects/STUDIES/nm-practice/nm-31subs/data/'];
 
 %scan_key(:,2)=PDSubs;
@@ -43,7 +44,7 @@ root_folder = ['/data/projects/STUDIES/nm-practice/nm-31subs/data/'];
 
 %Load SN mask and make SN masks with various topslices based on full_SN_mask: 
 %VmaskSN65 = spm_read_vols(spm_vol([root_folder '/SN_mask_139subs.nii']));%This is where JJW loads her 'full' SN mask file
-%VmaskSN64 = spm_read_vols(spm_vol([root_folder2 '/scripts/SN_TU_adults_social_doors_56.nii']));%This is where JJW loads her 'full' SN mask file
+%VmaskSN64 = spm_read_vols(spm_vol([root_fovlder2 '/scripts/SN_TU_adults_social_doors_56.nii']));%This is where JJW loads her 'full' SN mask file
 VmaskSN64 = spm_read_vols(spm_vol([root_folder 'full_SN_mask_pos2.nii']));
 
 
@@ -59,8 +60,12 @@ VmaskSN60(:,:,61)=0;
 
 %Loading NM scans using scan key col 2 to code in which study path to find NIFTI files:
 for s=1:length(scan_key(:,1))
+    %old code:
     scanname3 = dir([root_folder 'nm_avg' '/s1_psc_wr*.nii']);
     scannames3 = [root_folder 'nm_avg' '/' scanname3(s,1).name];
+    
+    %new code:
+    %scannames3 = [root_folder 'nm_avg/s1_psc_wrs' num2str(scan_key(s,2)) '_SDC_NM.nii'];
     
     v = spm_vol(scannames3);
     V = spm_read_vols(v);
@@ -388,7 +393,7 @@ VmaskSN64 = spm_read_vols(spm_vol([root_folder 'full_SN_mask_pos2.nii']));
 v=spm_vol([root_folder 'RVSt_dBPND_05.nii']);
 V=spm_read_vols(v);
 vst_vox=V(VmaskSN64==1);
-for s=1:20
+for s=1:26
     vst_da_SN_vox(s)=nanmean(inmask_data(vst_vox==1,s));
     save vst_da_SN_vox vst_da_SN_vox
     s
@@ -398,6 +403,10 @@ figure;
 hist(inmask_data(:,6))
 
 
+size(V)
+size(vst_vox)
+size(inmask_data)
 
+plot(inmask_data(1,:))
 
 

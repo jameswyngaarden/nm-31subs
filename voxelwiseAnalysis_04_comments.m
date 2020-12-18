@@ -1,20 +1,28 @@
+%JW: clears everything out of workspace, fresh start
 clear all
+%JW: sets root folder variable as the data directory where nm images are,
+%gets used in processing later on
 root_folder = ['/data/projects/STUDIES/nm-practice/nm-31subs/data/'];
+%JW: allows MATLAB to find spm
 addpath('/data/spm12', '-end');
 savepath;
 
 %Switches for fine-tuning analysis by study: 
+    
+    %JW: [12/18/20]: Need to confirm whether we like this setting or not **
     %To filter out extreme-value voxels determined by distribution of all the voxels of all the subjects in the study: 
 exc_vox = 1; %this is a switch re: whether (1) or not (0) to exclude these voxels
 LowVox = 92; %this for example indicates that a voxel CNR below 92% would be excluded (if the switch is on). These likely should be modified in a study specific manner based on the distribution of all voxels in all subjects
 HiVox = 140; %excluded if voxel CNR above 141% would also be excluded 
-    
+   
     %To write out masks:
 make_mask = 0; %change to 1 if want to write out these masks. note would overwrite files of same name
 positive_relationship = 1; %makes masks of the data selectively with + or - relationships; if set to 0, would make mask including voxels with - relationships
 output_file05 = [root_folder 'genXage_pos_05.nii'];%mask containing voxels with relationships where p<0.05
 output_file01 = [root_folder 'genXage_pos_01.nii'];%mask containing voxels with relationships where p<0.01
 
+%JW: not used when we run RVST or voxelwise, but this is using
+%some array called filepaths2_ch to modify the scan_key
 %load scan_key.mat
 %for s=1:length(filepaths2_ch(:,1))
 %    for var=1:length(filepaths2_ch(1,:))
@@ -29,9 +37,16 @@ output_file01 = [root_folder 'genXage_pos_01.nii'];%mask containing voxels with 
 %end
 
 %load college.mat
-load scan_key_5.mat
+
+%JW: loads scan_key into workspace, which provides info about subject ID
+%and top/bottom slice range for analyses
+load scan_key_master.mat
+%JW: resets root folder in case it gets overwritten by load command in
+%previous line; artifact from older version (e.g., load college.mat) that
+%overwrote root_folder
 root_folder = ['/data/projects/STUDIES/nm-practice/nm-31subs/data/'];
 
+%JW: edits scan key with sub IDs, top slice, and bottom slice (!)
 %scan_key(:,2)=PDSubs;
 %scan_key(:,5)=top_slice;
 %scan_key(:,4)=bottom_slice;
@@ -45,9 +60,12 @@ root_folder = ['/data/projects/STUDIES/nm-practice/nm-31subs/data/'];
 %Load SN mask and make SN masks with various topslices based on full_SN_mask: 
 %VmaskSN65 = spm_read_vols(spm_vol([root_folder '/SN_mask_139subs.nii']));%This is where JJW loads her 'full' SN mask file
 %VmaskSN64 = spm_read_vols(spm_vol([root_fovlder2 '/scripts/SN_TU_adults_social_doors_56.nii']));%This is where JJW loads her 'full' SN mask file
+
+%JW: spm_vol reads in the header info for the .nii image, spm_read_vols
+%uses that header to read in the full image
 VmaskSN64 = spm_read_vols(spm_vol([root_folder 'full_SN_mask_pos2.nii']));
 
-
+%JW: sets voxel in z plane to 0 depending on mask size **
 VmaskSN63 = VmaskSN64;
 VmaskSN63(:,:,64)= 0;
 VmaskSN62 = VmaskSN63;
@@ -64,18 +82,19 @@ for s=1:length(scan_key(:,1))
     %scanname3 = dir([root_folder 'nm_avg' '/s1_psc_wr*.nii']);
     %scannames3 = [root_folder 'nm_avg' '/' scanname3(s,1).name];
     
-    %new code:
+    %new code (by Dave); sets path for each NM.nii file
     scannames3 = [root_folder 'nm_avg/s1_psc_wrs' num2str(scan_key(s,2)) '_SDC_NM.nii'];
     
+    %JW: reading in header of NM.nii files, then reading in the whole image
     v = spm_vol(scannames3);
     V = spm_read_vols(v);
     
+    %JW: makes average image of all subjects?
     full_scan(:,:,:,s) = V;%This is useful to make an average image of all subjects using an average of full_scan
     
+    %JW: sets SNmask for each subject based on top slice value
     %Get subject-specific topslice definitions specified in scan_key col 3
-    %and make appropriate SNmask. 
-   
-           
+    %and make appropriate SNmask.
     if scan_key(s,5) == 60
         SNmask = VmaskSN60;
     elseif scan_key(s,5) == 61
@@ -88,14 +107,15 @@ for s=1:length(scan_key(:,1))
         SNmask = VmaskSN64;
     end
             
-       
-
     %Eliminate all voxel values outside mask:
+    %JW: V reads in images; so, when reading in SNmask values = 0, this
+    %sets them as NaN so they don't get read
     V(SNmask==0)=NaN; 
     
     %Extract all voxel values within SN mask to create inmask_data as
     %matrix, where each row is a voxel and each column is a subject:
-    
+    %JW: creates var that only includes voxels in VmaskSN64 = to 1, i.e.,
+    %voxels in the mask
     inmask_data(:,s)=V(VmaskSN64==1);           
       
 end

@@ -10,21 +10,22 @@ root_folder=('/data/projects/STUDIES/nm-practice/nm-31subs/data/');
 %Subs = [3836, 3845, 3846, 3847, 3848, 3849, 3851, 3852, 3854, 3855, 3864, 3865, 3871, 3877, 3880, 3882, 3883, 3886, 3887, 3889, 3890, 3891, 3892, 3893, 3895, 3896, 3910, 3912, 3914, 3920, 3967, 3992, 4017, 4018, 4019, 4020]
 Subs = [3848, 3880, 3882, 3896, 3914]
 
-existing_template=1;
-templatedir= '/data/projects/STUDIES/nm-practice/nm-31subs/templates/';
+existing_template=1; %JW: if we want to create our own template, set this to 0
+templatedir= '/data/projects/STUDIES/nm-practice/nm-31subs/templates/'; %:JW: this template comes from the PNAS paper; note why**
 TPMdir = '/data/spm12/tpm/TPM.nii';
 hasT2 = 0;
 root_folder=('/data/projects/STUDIES/nm-practice/nm-31subs/data/');
 
+%JW: Step 0: align step, avg NM image for each individual subject; this may be different for SBU vs. Temple (dcm2niix may invert images)
 coreg=1; %%step 1 of preprocessing
-segment_dartel_normalize=1; %%step 3 of preprocessing
+segment_dartel_normalize=0; %%step 3 of preprocessing
 %for this step, make sure the TPMdir above is directing to SPM folder on your computer
-make_avg_image1=1;  %step 5 of preprocessing. this will save 'avg_spatially_normalized.nii' in image of all participants' brains averaged in the root folder
-intensity_norm=1; %step SN7 of preprocessing. this will generate CNR images (psc_wr prefix) by intensity normalization relative to the reference region
-make_avg_image2=1; % step SN8 of preprocessing. this will save 'avg_CNR_image.nii' in image of all participants' brains with CNR values averaged in the root folder
-make_top_slice=1; % step SN10 of preprocessing. this will tell for each subject if any data is missing in dorsal SN and at what slice the scan is cut off.
+make_avg_image1=0;  %step 5 of preprocessing. this will save 'avg_spatially_normalized.nii' in image of all participants' brains averaged in the root folder
+intensity_norm=0; %step SN7 of preprocessing. this will generate CNR images (psc_wr prefix) by intensity normalization relative to the reference region
+make_avg_image2=0; % step SN8 of preprocessing. this will save 'avg_CNR_image.nii' in image of all participants' brains with CNR values averaged in the root folder
+make_top_slice=0; % step SN10 of preprocessing. this will tell for each subject if any data is missing in dorsal SN and at what slice the scan is cut off.
 %the make_top_slice step saves something called top_slice that will be needed  for the voxelwise analysis script
-smooth=1; %step SN11 of preprocessing. this will apply smoothing and create the fully preprocessed NM image (prefix s1_psc_wr), ready for voxelwise analysis with voxelwise analysis script
+smooth=0; %step SN11 of preprocessing. this will apply smoothing and create the fully preprocessed NM image (prefix s1_psc_wr), ready for voxelwise analysis with voxelwise analysis script
 %%%%%%%make_divided_oi_LC_mask=0; %step LC7 of preprocessing. This will divide the manually-drawn over-inclusive LC mask into rostro-caudal segments
 %inv_normalize=0; %step LC8. This will bring the LC overinclusive mask from MNI space to native space
 %the inv_normalize step loads the normalization template, this must be the same template that was used in the segment_dartel_normalize step. it will look in the templatedir be sure this template is there.

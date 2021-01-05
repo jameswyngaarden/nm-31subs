@@ -1,9 +1,5 @@
-%JW: clears everything out of workspace, fresh start
 clear all
-%JW: sets root folder variable as the data directory where nm images are,
-%gets used in processing later on
 root_folder = ['/data/projects/STUDIES/nm-practice/nm-31subs/data/'];
-%JW: allows MATLAB to find spm
 addpath('/data/spm12', '-end');
 savepath;
 
@@ -21,7 +17,7 @@ positive_relationship = 1; %makes masks of the data selectively with + or - rela
 output_file05 = [root_folder 'genXage_pos_05.nii'];%mask containing voxels with relationships where p<0.05
 output_file01 = [root_folder 'genXage_pos_01.nii'];%mask containing voxels with relationships where p<0.01
 
-%JW: not used when we run RVST or voxelwise, but this is using an array called filepaths2_ch to modify the scan_key
+%JW: haven'tbeen using this, but this is using filepaths2_ch to modify the scan_key: condition*, gender, other
 %load scan_key.mat
 %for s=1:length(filepaths2_ch(:,1))
 %    for var=1:length(filepaths2_ch(1,:))
@@ -37,10 +33,7 @@ output_file01 = [root_folder 'genXage_pos_01.nii'];%mask containing voxels with 
 
 %load college.mat
 
-%JW: loads scan_key into workspace, which provides info about subject ID
-%and top/bottom slice range for analyses
 load scan_key_master.mat
-%JW: resets root folder in case it gets overwritten by load command in previous line; artifact from older version (e.g., load college.mat) that would overwrite root_folder
 root_folder = ['/data/projects/STUDIES/nm-practice/nm-31subs/data/'];
 
 %JW: writes sub IDs, top slice, and bottom slice to scan_key(!)
@@ -59,7 +52,7 @@ root_folder = ['/data/projects/STUDIES/nm-practice/nm-31subs/data/'];
 %VmaskSN64 = spm_read_vols(spm_vol([root_fovlder2 '/scripts/SN_TU_adults_social_doors_56.nii']));%This is where JJW loads her 'full' SN mask file
 
 %JW: spm_vol reads in the header info for the .nii image, spm_read_vols uses that header to read in the full image
-VmaskSN64 = spm_read_vols(spm_vol([root_folder 'full_SN_mask_pos2.nii']));
+VmaskSN64 = spm_read_vols(spm_vol([root_folder 'full_SN_mask_pos2.nii'])); %JW: where does this mask come from?
 
 %JW: sets voxel in z plane to 0 depending on mask size **
 VmaskSN63 = VmaskSN64;
@@ -72,13 +65,13 @@ VmaskSN60 = VmaskSN61;
 VmaskSN60(:,:,61)=0;
 
 
-%JW: Loading NM scans using scan key col 2 to code in which study path to find NIFTI files:
+%Loading NM scans using scan key col 2 to code in which study path to find NIFTI files:
 for s=1:length(scan_key(:,1))
-    %JW: old code:
+    %JW: old code, sets paths based on directory:
     %scanname3 = dir([root_folder 'nm_avg' '/s1_psc_wr*.nii']);
     %scannames3 = [root_folder 'nm_avg' '/' scanname3(s,1).name];
     
-    %JW: new code (by Dave); sets path for each NM.nii file
+    %JW: new code (by Dave); sets path for each NM.nii file from scan key
     scannames3 = [root_folder 'nm_avg/s1_psc_wrs' num2str(scan_key(s,2)) '_SDC_NM.nii'];
     
     %JW: reading in header of NM.nii files, then reading in the whole image
@@ -103,12 +96,12 @@ for s=1:length(scan_key(:,1))
     end
             
     %Eliminate all voxel values outside mask:
-    %JW: V reads in images; so, when reading in SNmask values = 0, this sets them as NaN so they don't get read
+    %JW: V reads in images; so, when reading in SNmask values = 0, this sets them as NaN so they don't get read; more on this? is this done for nanmean?
     V(SNmask==0)=NaN; 
     
     %Extract all voxel values within SN mask to create inmask_data as
     %matrix, where each row is a voxel and each column is a subject:
-    %JW: creates var that only includes voxels in VmaskSN64 = 1, i.e., voxels in the mask
+    %JW: creates var that only includes voxels in VmaskSN64 = 1, i.e., voxels in the mask; should this just be SNmask, not VmaskSN64?
     inmask_data(:,s)=V(VmaskSN64==1);           
       
 end

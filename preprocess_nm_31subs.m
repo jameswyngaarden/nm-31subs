@@ -11,7 +11,8 @@ root_folder=('/data/projects/STUDIES/nm-practice/nm-31subs/data/');
 Subs = [3848, 3880, 3882, 3896, 3914]
 
 existing_template=1; %JW: if we want to create our own template, set this to 0
-templatedir= '/data/projects/STUDIES/nm-practice/nm-31subs/templates/'; %:JW: this template comes from the PNAS paper; note why**
+templatedir= '/data/projects/STUDIES/nm-practice/nm-31subs/templates/'; %:JW: these templates* (masks?) come from the PNAS paper; 
+%using these instead of more standard templates because the SN has anatomical subregions that are differentially correlated with SN DA release and NM that these masks are more sensitive to
 TPMdir = '/data/spm12/tpm/TPM.nii';
 hasT2 = 0;
 root_folder=('/data/projects/STUDIES/nm-practice/nm-31subs/data/');
@@ -41,10 +42,10 @@ for s = 1:length(Subs)
     end
     NMscanfiles{s,1} = [root_folder 's' num2str(Subs(s)) '/' NMscanname.name];
     T1scanfiles{s,1} = [root_folder 's' num2str(Subs(s)) '/' T1scanname.name];
-    rNMscanfiles{s,1} = [root_folder 's' num2str(Subs(s)) '/r' NMscanname(1,1).name];
-    wrNMscanfiles{s,1} = [root_folder 's' num2str(Subs(s)) '/wr' NMscanname(1,1).name];
+    rNMscanfiles{s,1} = [root_folder 's' num2str(Subs(s)) '/r' NMscanname(1,1).name]; %coregistered NM image
+    wrNMscanfiles{s,1} = [root_folder 's' num2str(Subs(s)) '/wr' NMscanname(1,1).name]; 
     psc_wrNMscanfiles{s,1} = [root_folder 's' num2str(Subs(s)) '/psc_wr' NMscanname.name];
-    s1_psc_wrNMscanfiles{s,1} = [root_folder 's' num2str(Subs(s)) '/s1_psc_wr' NMscanname.name];
+    s1_psc_wrNMscanfiles{s,1} = [root_folder 's' num2str(Subs(s)) '/s1_psc_wr' NMscanname.name]; %fully processed, final output image for each participant
     wT1scanfiles{s,1} = [root_folder 's' num2str(Subs(s)) '/w' T1scanname(1,1).name];
 end
 
